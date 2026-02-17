@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline ML — Predicción de Deserción Universitaria</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --card: #131929;
+    --border: #1e2a45;
+    --accent: #6c8aff;
+    --accent2: #ff6c8a;
+    --accent3: #6cffa8;
+    --accent4: #ffc56c;
+    --accent5: #c46cff;
+    --accent6: #6cf0ff;
+    --accent7: #ff8f6c;
+    --text: #e2e8f4;
+    --muted: #7b8baa;
+    --glow: rgba(108, 138, 255, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .noise {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto; padding: 60px 24px 80px;
+  }
+
+  header {
+    text-align: center; margin-bottom: 64px;
+    animation: fadeIn 0.8s ease-out;
+  }
+
+  header .label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 3px;
+    color: var(--accent); font-weight: 700; margin-bottom: 16px;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 48px); font-weight: 800;
+    line-height: 1.15; margin-bottom: 14px;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  header p {
+    color: var(--muted); font-size: 15px; max-width: 540px; margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ─── Pipeline Spine ─── */
+  .pipeline {
+    position: relative;
+    display: flex; flex-direction: column; gap: 0;
+  }
+
+  .pipeline::before {
+    content: '';
+    position: absolute; left: 36px; top: 0; bottom: 0; width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent5), var(--accent3));
+    opacity: 0.35;
+  }
+
+  /* ─── Stage Card ─── */
+  .stage {
+    position: relative;
+    display: grid; grid-template-columns: 72px 1fr; gap: 0;
+    padding-bottom: 12px;
+    animation: slideUp 0.6s ease-out both;
+  }
+
+  .stage:nth-child(1) { animation-delay: 0.1s; }
+  .stage:nth-child(2) { animation-delay: 0.2s; }
+  .stage:nth-child(3) { animation-delay: 0.3s; }
+  .stage:nth-child(4) { animation-delay: 0.4s; }
+  .stage:nth-child(5) { animation-delay: 0.5s; }
+  .stage:nth-child(6) { animation-delay: 0.6s; }
+  .stage:nth-child(7) { animation-delay: 0.7s; }
+
+  /* Number bubble */
+  .stage .num {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; color: #fff;
+    position: relative; z-index: 2;
+    margin-left: 14px; margin-top: 22px;
+    box-shadow: 0 0 24px var(--glow);
+    flex-shrink: 0;
+  }
+
+  .stage:nth-child(1) .num { background: var(--accent); }
+  .stage:nth-child(2) .num { background: var(--accent2); }
+  .stage:nth-child(3) .num { background: var(--accent3); color: #0b0f1a; }
+  .stage:nth-child(4) .num { background: var(--accent4); color: #0b0f1a; }
+  .stage:nth-child(5) .num { background: var(--accent5); }
+  .stage:nth-child(6) .num { background: var(--accent6); color: #0b0f1a; }
+  .stage:nth-child(7) .num { background: var(--accent7); }
+
+  .stage .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 26px;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+
+  .stage .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  }
+
+  .card .title-row {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;
+  }
+
+  .card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px; font-weight: 700; line-height: 1.3;
+  }
+
+  .card .fn {
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 6px;
+    letter-spacing: 0.5px; white-space: nowrap;
+  }
+
+  .stage:nth-child(1) .fn { background: rgba(108,138,255,.15); color: var(--accent); }
+  .stage:nth-child(2) .fn { background: rgba(255,108,138,.15); color: var(--accent2); }
+  .stage:nth-child(3) .fn { background: rgba(108,255,168,.15); color: var(--accent3); }
+  .stage:nth-child(4) .fn { background: rgba(255,197,108,.15); color: var(--accent4); }
+  .stage:nth-child(5) .fn { background: rgba(196,108,255,.15); color: var(--accent5); }
+  .stage:nth-child(6) .fn { background: rgba(108,240,255,.15); color: var(--accent6); }
+  .stage:nth-child(7) .fn { background: rgba(255,143,108,.15); color: var(--accent7); }
+
+  .card p {
+    color: var(--muted); font-size: 13.5px; line-height: 1.65; margin-bottom: 14px;
+  }
+
+  .tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+
+  .tag {
+    font-size: 11px; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    color: var(--muted);
+  }
+
+  /* ─── Arrow connector between stages ─── */
+  .arrow {
+    display: flex; align-items: center; justify-content: center;
+    height: 28px; padding-left: 72px;
+  }
+
+  .arrow svg {
+    opacity: 0.2;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  /* ─── Footer ─── */
+  footer {
+    text-align: center; margin-top: 56px;
+    color: var(--muted); font-size: 12px; letter-spacing: 1px;
+    animation: fadeIn 1s ease-out 1s both;
+  }
+
+  /* ─── Animations ─── */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.15; }
+    50%      { opacity: 0.35; }
+  }
+
+  @media (max-width: 600px) {
+    .pipeline::before { left: 26px; }
+    .stage { grid-template-columns: 52px 1fr; }
+    .stage .num { width: 36px; height: 36px; font-size: 13px; margin-left: 8px; }
+    .card { padding: 16px 18px; }
+    .card h2 { font-size: 17px; }
+    .arrow { padding-left: 52px; }
+  }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+<div class="container">
+
+  <header>
+    <div class="label">Machine Learning Pipeline</div>
+    <h1>Predicción Temprana de Deserción Universitaria</h1>
+    <p>Pipeline completo de aprendizaje supervisado — desde la carga de datos hasta la interpretación del modelo y estudio de caso.</p>
+  </header>
+
+  <div class="pipeline">
+
+    <!-- Stage 1 -->
+    <div class="stage">
+      <div class="num">1</div>
+      <div class="card">
+        <div class="title-row">
+          <h2>Carga y Exploración de Datos</h2>
+          <span class="fn">load_or_generate_data() · exploratory_analysis()</span>
+        </div>
+        <p>Se carga el dataset UCI (o se genera uno sintético equivalente con 4 424 registros). Se analiza la distribución de clases (Dropout / Enrolled / Graduate), estadísticas descriptivas y visualizaciones iniciales.</p>
+        <div class="tags">
+          <span class="tag">4 424 estudiantes</span>
+          <span class="tag">30 variables</span>
+          <span class="tag">3 clases</span>
+          <span class="tag">Histogramas</span>
+          <span class="tag">Boxplots</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2 L8 14 M3 9 L8 14 L13 9" stroke="#e2e8f4" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+    <!-- Stage 2 -->
+    <div class="stage">
+      <div class="num">2</div>
+      <div class="card">
+        <div class="title-row">
+          <h2>Limpieza y Calidad de Datos</h2>
+          <span class="fn">clean_data()</span>
+        </div>
+        <p>Imputación de valores faltantes con la mediana (medida robusta). Detección de outliers con el método IQR — reportados pero retenidos para preservar datos de estudiantes en riesgo.</p>
+        <div class="tags">
+          <span class="tag">Imputación (mediana)</span>
+          <span class="tag">IQR outliers</span>
+          <span class="tag">Validación de tipos</span>
+          <span class="tag">Sin eliminación</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2 L8 14 M3 9 L8 14 L13 9" stroke="#e2e8f4" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+    <!-- Stage 3 -->
+    <div class="stage">
+      <div class="num">3</div>
+      <div class="card">
+        <div class="title-row">
+          <h2>Ingeniería de Características</h2>
+          <span class="fn">engineer_features()</span>
+        </div>
+        <p>Creación de variables derivadas que capturan señales de riesgo académico: ratio de aprobación por semestre, tendencia académica (cambio de notas entre semestres) y promedio combinado de aprobación.</p>
+        <div class="tags">
+          <span class="tag">approval_ratio_1st</span>
+          <span class="tag">approval_ratio_2nd</span>
+          <span class="tag">academic_trend</span>
+          <span class="tag">avg_approval_ratio</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2 L8 14 M3 9 L8 14 L13 9" stroke="#e2e8f4" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+    <!-- Stage 4 -->
+    <div class="stage">
+      <div class="num">4</div>
+      <div class="card">
+        <div class="title-row">
+          <h2>Preprocesamiento</h2>
+          <span class="fn">preprocess()</span>
+        </div>
+        <p>Codificación de la variable objetivo con LabelEncoder. Escalado de features a [0, 1] con MinMaxScaler. División estratificada: 70 % entrenamiento, 15 % validación, 15 % prueba.</p>
+        <div class="tags">
+          <span class="tag">LabelEncoder</span>
+          <span class="tag">MinMaxScaler [0, 1]</span>
+          <span class="tag">One-Hot Encoding</span>
+          <span class="tag">70 / 15 / 15 split</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2 L8 14 M3 9 L8 14 L13 9" stroke="#e2e8f4" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+    <!-- Stage 5 -->
+    <div class="stage">
+      <div class="num">5</div>
+      <div class="card">
+        <div class="title-row">
+          <h2>Entrenamiento y Evaluación</h2>
+          <span class="fn">train_and_evaluate()</span>
+        </div>
+        <p>Tres modelos candidatos entrenados y comparados: Regresión Logística (baseline lineal), Árbol de Decisión (no lineal) y Random Forest (ensamble robusto). Evaluación con F1 ponderado, matrices de confusión y validación cruzada 5-fold.</p>
+        <div class="tags">
+          <span class="tag">Logistic Regression</span>
+          <span class="tag">Decision Tree</span>
+          <span class="tag">Random Forest</span>
+          <span class="tag">F1 weighted</span>
+          <span class="tag">5-Fold CV</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2 L8 14 M3 9 L8 14 L13 9" stroke="#e2e8f4" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+    <!-- Stage 6 -->
+    <div class="stage">
+      <div class="num">6</div>
+      <div class="card">
+        <div class="title-row">
+          <h2>Importancia de Variables</h2>
+          <span class="fn">feature_importance_analysis()</span>
+        </div>
+        <p>Análisis de las 15 variables más importantes del mejor modelo. Permite interpretar qué factores (académicos, socioeconómicos, institucionales) influyen más en la predicción de deserción.</p>
+        <div class="tags">
+          <span class="tag">feature_importances_</span>
+          <span class="tag">Top 15 features</span>
+          <span class="tag">Interpretabilidad</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="arrow"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2 L8 14 M3 9 L8 14 L13 9" stroke="#e2e8f4" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+    <!-- Stage 7 -->
+    <div class="stage">
+      <div class="num">7</div>
+      <div class="card">
+        <div class="title-row">
+          <h2>Estudio de Caso Simulado</h2>
+          <span class="fn">simulated_case_study()</span>
+        </div>
+        <p>Perfil ficticio de estudiante en riesgo ("Ana María") procesado por el modelo como herramienta de apoyo a decisiones. Genera probabilidades por clase y recomendaciones de intervención para el asesor académico.</p>
+        <div class="tags">
+          <span class="tag">Perfil ficticio</span>
+          <span class="tag">predict_proba</span>
+          <span class="tag">Recomendaciones</span>
+          <span class="tag">Apoyo a decisiones</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Alejandro Garcés Ramírez · Fundamentos de Machine Learning (SI3015)
+  </footer>
+
+</div>
+</body>
+</html>

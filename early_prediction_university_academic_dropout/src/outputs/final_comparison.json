@@ -1,0 +1,121 @@
+{
+  "relabel": {
+    "students_relabeled": 764,
+    "relabel_fraction": 0.1727,
+    "signal_counts": {
+      "discord": 1594,
+      "ambiguous": 1397,
+      "noise": 89
+    }
+  },
+  "metrics_wide": {
+    "accuracy__original": {
+      "DecisionTree": 0.67,
+      "LogisticRegression": 0.7251,
+      "LinearRegression": 0.6763
+    },
+    "accuracy__corrected": {
+      "DecisionTree": 0.5723,
+      "LogisticRegression": 0.6537,
+      "LinearRegression": 0.642
+    },
+    "precision_macro__original": {
+      "DecisionTree": 0.6582,
+      "LogisticRegression": 0.7066,
+      "LinearRegression": 0.7041
+    },
+    "precision_macro__corrected": {
+      "DecisionTree": 0.6177,
+      "LogisticRegression": 0.6443,
+      "LinearRegression": 0.649
+    },
+    "recall_macro__original": {
+      "DecisionTree": 0.6561,
+      "LogisticRegression": 0.7055,
+      "LinearRegression": 0.6722
+    },
+    "recall_macro__corrected": {
+      "DecisionTree": 0.5799,
+      "LogisticRegression": 0.6135,
+      "LinearRegression": 0.5482
+    },
+    "f1_macro__original": {
+      "DecisionTree": 0.6406,
+      "LogisticRegression": 0.6913,
+      "LinearRegression": 0.6512
+    },
+    "f1_macro__corrected": {
+      "DecisionTree": 0.5572,
+      "LogisticRegression": 0.6134,
+      "LinearRegression": 0.5441
+    },
+    "recall_dropout__original": {
+      "DecisionTree": 0.6732,
+      "LogisticRegression": 0.662,
+      "LinearRegression": 0.5662
+    },
+    "recall_dropout__corrected": {
+      "DecisionTree": 0.4732,
+      "LogisticRegression": 0.569,
+      "LinearRegression": 0.338
+    },
+    "f1_dropout__original": {
+      "DecisionTree": 0.7199,
+      "LogisticRegression": 0.7448,
+      "LinearRegression": 0.6955
+    },
+    "f1_dropout__corrected": {
+      "DecisionTree": 0.6022,
+      "LogisticRegression": 0.6847,
+      "LinearRegression": 0.4979
+    }
+  },
+  "delta_corrected_minus_original": {
+    "accuracy": {
+      "DecisionTree": -0.0977,
+      "LogisticRegression": -0.0714,
+      "LinearRegression": -0.0343
+    },
+    "precision_macro": {
+      "DecisionTree": -0.0405,
+      "LogisticRegression": -0.0623,
+      "LinearRegression": -0.0551
+    },
+    "recall_macro": {
+      "DecisionTree": -0.0762,
+      "LogisticRegression": -0.092,
+      "LinearRegression": -0.124
+    },
+    "f1_macro": {
+      "DecisionTree": -0.0834,
+      "LogisticRegression": -0.0779,
+      "LinearRegression": -0.1071
+    },
+    "recall_dropout": {
+      "DecisionTree": -0.2,
+      "LogisticRegression": -0.093,
+      "LinearRegression": -0.2282
+    },
+    "f1_dropout": {
+      "DecisionTree": -0.1177,
+      "LogisticRegression": -0.0601,
+      "LinearRegression": -0.1976
+    }
+  },
+  "wins_by_label_source": {
+    "original": 6
+  },
+  "verdict_counts": {
+    "metrics_improved": 0,
+    "metrics_degraded": 18,
+    "metrics_unchanged": 0,
+    "metrics_total": 18
+  },
+  "best_overall": {
+    "model": "LogisticRegression",
+    "label_source": "original",
+    "accuracy": 0.7251,
+    "f1_macro": 0.6913,
+    "recall_dropout": 0.662
+  }
+}

@@ -15,7 +15,4 @@ data.csv
 .venv/
 
 # Generated artifacts (reproducible by running the pipeline)
-src/outputs/figures/*.png
-src/outputs/*.csv
-src/outputs/*.npy
-src/outputs/*.json
+

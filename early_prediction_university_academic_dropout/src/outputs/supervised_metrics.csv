@@ -1,0 +1,7 @@
+model,label_source,accuracy,precision_macro,recall_macro,f1_macro,recall_dropout,f1_dropout
+DecisionTree,original,0.67,0.6582,0.6561,0.6406,0.6732,0.7199
+LogisticRegression,original,0.7251,0.7066,0.7055,0.6913,0.662,0.7448
+LinearRegression,original,0.6763,0.7041,0.6722,0.6512,0.5662,0.6955
+DecisionTree,corrected,0.5723,0.6177,0.5799,0.5572,0.4732,0.6022
+LogisticRegression,corrected,0.6537,0.6443,0.6135,0.6134,0.569,0.6847
+LinearRegression,corrected,0.642,0.649,0.5482,0.5441,0.338,0.4979

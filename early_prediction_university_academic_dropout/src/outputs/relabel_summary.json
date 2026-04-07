@@ -1,0 +1,35 @@
+{
+  "total_students": 4424,
+  "fcm_ambiguity_threshold": 0.5,
+  "suspicion_cutoff": 2,
+  "signal_counts": {
+    "discord": 1594,
+    "ambiguous": 1397,
+    "noise": 89
+  },
+  "score_distribution": {
+    "0": 2194,
+    "1": 1415,
+    "2": 780,
+    "3": 35
+  },
+  "relabeled_total": 764,
+  "relabeled_fraction": 0.1727,
+  "transition_matrix": {
+    "Dropout": {
+      "Dropout": 995,
+      "Enrolled": 14,
+      "Graduate": 4
+    },
+    "Enrolled": {
+      "Dropout": 0,
+      "Enrolled": 460,
+      "Graduate": 0
+    },
+    "Graduate": {
+      "Dropout": 426,
+      "Enrolled": 320,
+      "Graduate": 2205
+    }
+  }
+}

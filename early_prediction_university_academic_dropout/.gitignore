@@ -7,12 +7,15 @@ __pycache__/
 data.csv
 
 # Outputs generados
-src/outputs/figures/*.png
-src/outputs/*.json
-src/outputs/data_corrected.csv
 
 # OS / IDE
 .DS_Store
 .vscode/
 .idea/
 .venv/
+
+# Generated artifacts (reproducible by running the pipeline)
+src/outputs/figures/*.png
+src/outputs/*.csv
+src/outputs/*.npy
+src/outputs/*.json

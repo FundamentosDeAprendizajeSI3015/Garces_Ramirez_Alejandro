@@ -15,3 +15,4 @@ src/outputs/data_corrected.csv
 .DS_Store
 .vscode/
 .idea/
+.venv/
